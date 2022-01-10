@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "770311305301",
+    "project_id": "whats-hide",
+    "storage_bucket": "whats-hide.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770311305301:android:ed2b79e079a6fbacfd3cdc",
+        "android_client_info": {
+          "package_name": "com.whatshide.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770311305301-asi8360f81qf52ltorv8jvqg7ac5nsb8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whatshide.android",
+            "certificate_hash": "bb92ba1047296ce16ca9cb34fea16dde1c6dd211"
+          }
+        },
+        {
+          "client_id": "770311305301-tmi59gvtpmbkg98cag5g9ul2hlu7slr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYO79yj5JZLjEOqj6vqnW8YZ3LVSnOcvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770311305301-tmi59gvtpmbkg98cag5g9ul2hlu7slr3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
