@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -72,7 +73,8 @@ public class SearchActivity extends AppCompatActivity implements UserListener {
     FirebaseAuth mAuth;
     TextView notice;
     String mine;
-    private Chat forwardChat;
+
+    private List<Chat> forwardChats;
     private String MODE = Constants.MODE_SEARCH;
     List<String> allContacts,SPContacts,firestoreContacts;
     private MaterialSearchView searchView;
@@ -98,9 +100,9 @@ public class SearchActivity extends AppCompatActivity implements UserListener {
     }
 
     private void getIntentData() {
-        Gson gson = new Gson();
-        forwardChat = gson.fromJson(getIntent().getStringExtra("forward_chat"),Chat.class);
-        if(forwardChat == null){
+        forwardChats = (List<Chat>) getIntent().getSerializableExtra("forward_chats");
+        Log.d("size of forwards chats", "getIntentData:" + forwardChats.size());
+        if(forwardChats == null){
             MODE = Constants.MODE_SEARCH;
         }else{
             MODE = Constants.MODE_FORWARD;
@@ -321,8 +323,50 @@ public class SearchActivity extends AppCompatActivity implements UserListener {
     @Override
     public void onUserClicked(User user) {
         if(MODE.equals(Constants.MODE_FORWARD)){
-            sendMessage(forwardChat,user);
+            for(Chat forwardChat : forwardChats){
+                sendMessage(forwardChat,user);
+            }
+
+            mDatabase.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
+                    .whereEqualTo(Constants.KEY_SENDER,mine)
+                    .whereEqualTo(Constants.KEY_RECEIVER,user.getMobile())
+                    .get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    if(task.getResult().getDocuments().size() > 0){
+                        conversationId = task.getResult().getDocuments().get(0).getId();
+                        updateConversation(forwardChats.get(forwardChats.size()-1).getMessage());
+                    }else{
+
+                        mDatabase.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
+                                .whereEqualTo(Constants.KEY_SENDER,user.getMobile())
+                                .whereEqualTo(Constants.KEY_RECEIVER,mine)
+                                .get().addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful()){
+                                if(task1.getResult().getDocuments().size() > 0){
+                                    conversationId = task1.getResult().getDocuments().get(0).getId();
+                                    updateConversation(forwardChats.get(forwardChats.size()-1).getMessage());
+                                }else{
+                                    HashMap<String, Object> conversation = new HashMap<>();
+                                    conversation.put(Constants.KEY_SENDER,mine);
+                                    conversation.put(Constants.KEY_RECEIVER,user.getMobile());
+                                    conversation.put(Constants.KEY_SENDER_NAME,me.getName());
+                                    conversation.put(Constants.KEY_SENDER_PROFILE_URL,me.getProfile_url());
+                                    conversation.put(Constants.KEY_RECEIVER_NAME,user.getName());
+                                    conversation.put(Constants.KEY_RECEIVER_PROFILE_URL,user.getProfile_url());
+                                    conversation.put(Constants.KEY_LAST_MESSAGE,forwardChats.get(forwardChats.size()-1).getMessage());
+                                    conversation.put(Constants.KEY_TIMESTAMP,new Date());
+                                    conversation.put(Constants.KEY_STATUS,Constants.VALUE_DELIVERED);
+                                    addConversation(conversation);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
             startActivity(new Intent(getApplicationContext(),HomeActivity.class));
+
+            //raise a toast for successful execution
             Toast.makeText(this, "Message Forward Successfully!", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -431,43 +475,6 @@ public class SearchActivity extends AppCompatActivity implements UserListener {
         mDatabase.collection(Constants.KEY_COLLECTION_MESSAGES)
                 .add(chat);
 
-
-        mDatabase.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Constants.KEY_SENDER,mine)
-                .whereEqualTo(Constants.KEY_RECEIVER,user.getMobile())
-                .get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                if(task.getResult().getDocuments().size() > 0){
-                    conversationId = task.getResult().getDocuments().get(0).getId();
-                    updateConversation(forwardChat.getMessage());
-                }else{
-
-                    mDatabase.collection(Constants.KEY_COLLECTION_CONVERSATIONS)
-                            .whereEqualTo(Constants.KEY_SENDER,user.getMobile())
-                            .whereEqualTo(Constants.KEY_RECEIVER,mine)
-                            .get().addOnCompleteListener(task1 -> {
-                        if(task1.isSuccessful()){
-                            if(task1.getResult().getDocuments().size() > 0){
-                                conversationId = task1.getResult().getDocuments().get(0).getId();
-                                updateConversation(forwardChat.getMessage());
-                            }else{
-                                HashMap<String, Object> conversation = new HashMap<>();
-                                conversation.put(Constants.KEY_SENDER,mine);
-                                conversation.put(Constants.KEY_RECEIVER,user.getMobile());
-                                conversation.put(Constants.KEY_SENDER_NAME,me.getName());
-                                conversation.put(Constants.KEY_SENDER_PROFILE_URL,me.getProfile_url());
-                                conversation.put(Constants.KEY_RECEIVER_NAME,user.getName());
-                                conversation.put(Constants.KEY_RECEIVER_PROFILE_URL,user.getProfile_url());
-                                conversation.put(Constants.KEY_LAST_MESSAGE,forwardChat.getMessage());
-                                conversation.put(Constants.KEY_TIMESTAMP,new Date());
-                                conversation.put(Constants.KEY_STATUS,Constants.VALUE_DELIVERED);
-                                addConversation(conversation);
-                            }
-                        }
-                    });
-                }
-            }
-        });
 
 
     }

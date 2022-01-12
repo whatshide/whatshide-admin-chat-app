@@ -606,6 +606,11 @@ public class AdminChatActivity extends AppCompatActivity implements MessageListe
 
     }
 
+    @Override
+    public void onMessageRemoved(Chat chat) {
+
+    }
+
     private void openSelectedToolbar() {
         isSelectedToolbarOpen = true;
         selectedToolbar.setVisibility(View.VISIBLE);

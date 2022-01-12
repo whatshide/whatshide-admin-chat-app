@@ -1,13 +1,14 @@
 package com.whatshide.android.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Chat {
+public class Chat implements Serializable {
     String id, sender,receiver,message,time,image_url,status;
     public Date dateObj;
     public String chatId, conversationId,conversationImageUrl,conversationName;
     public String senderName,receiverName,senderProfile,receiverProfile;
-
+    public boolean selected = false;
     public Chat(String sender, String receiver, String message, String time, String image_url) {
         this.sender = sender;
         this.receiver = receiver;
@@ -17,6 +18,14 @@ public class Chat {
     }
 
     public Chat() {
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public String getId() {

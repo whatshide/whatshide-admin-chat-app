@@ -3,7 +3,11 @@ package com.whatshide.android.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.text.Html;
 import android.text.Layout;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +67,11 @@ public class AdminChatAdapter extends RecyclerView.Adapter<AdminChatAdapter.myVi
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
         Chat chat = list.get(position);
         holder.sender.setText(getName(chat.getSender()));
-        holder.message.setText(chat.getMessage());
+        holder.message.setText(Html.fromHtml(chat.getMessage()));
         holder.time.setText(chat.getTime());
+
+        holder.message.setMovementMethod(LinkMovementMethod.getInstance());
+
         holder.itemView.setSelected(position == selectedChat);
         if(chat.getImage_url() != null){
             Bitmap original = UtilFun.getBitmapFromEncodeImage(chat.getImage_url());

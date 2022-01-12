@@ -4,5 +4,5 @@ import com.whatshide.android.models.Chat;
 
 public interface MessageListener {
     void onMessageSelect(Chat chat);
-
+    void onMessageRemoved(Chat chat);
 }

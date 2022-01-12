@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -54,6 +55,7 @@ import com.whatshide.android.utilities.UtilFun;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -85,12 +87,13 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
 
     private boolean isOnline = false;
     private TextView message_status;
-    private Chat selectedChat;
+
+    private List<Chat> selectedChats = new ArrayList<>();
 
     private RelativeLayout selectedToolbar;
     private ImageView selectedClose;
     private ImageView selectedForward;
-
+    private ImageView selectedCopy;
 
     private List<Uri> imageList = new ArrayList<>();
     private RelativeLayout selectedImage;
@@ -161,10 +164,24 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
         cover.setOnClickListener(coverListener);
         selectedClose.setOnClickListener(selectedCloseListener);
         selectedForward.setOnClickListener(selectedForwardListener);
+        selectedCopy.setOnClickListener(selectedCopyListener);
     }
 
 
-
+    private View.OnClickListener selectedCopyListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(selectedChats.size()>1){
+                Toast.makeText(ChatActivity.this, "Select Only One Message!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            ClipboardManager manager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText("text",selectedChats.get(0).getMessage());
+            manager.setPrimaryClip(clipData);
+            closeSelectedToolbar();
+            Toast.makeText(ChatActivity.this, "Message Copied Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    };
     private View.OnClickListener selectedForwardListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -173,9 +190,8 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
     };
 
     private void openForwardActivity() {
-        Gson gson = new Gson();
-        Intent intent = new Intent(getApplicationContext(),SearchActivity.class);
-        intent.putExtra("forward_chat", gson.toJson(selectedChat));
+        Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+        intent.putExtra("forward_chats", (Serializable) selectedChats);
         startActivity(intent);
         finish();
     }
@@ -380,6 +396,7 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
         selectedClose = (ImageView) findViewById(R.id.selected_close);
         selectedToolbar = (RelativeLayout) findViewById(R.id.selected_toolbar);
         selectedForward = (ImageView) findViewById(R.id.selected_forward);
+        selectedCopy = (ImageView) findViewById(R.id.selected_copy);
 
         cover = (View) findViewById(R.id.cover);
 
@@ -783,7 +800,12 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
     @Override
     public void onMessageSelect(Chat chat) {
         openSelectedToolbar();
-        selectedChat = chat;
+        selectedChats.add(chat);
+    }
+
+    @Override
+    public void onMessageRemoved(Chat chat) {
+        selectedChats.remove(chat);
     }
 
     private void openSelectedToolbar() {
@@ -795,7 +817,7 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
     private void closeSelectedToolbar() {
         isSelectedToolbarOpen = false;
         selectedToolbar.setVisibility(View.GONE);
-        selectedChat = null;
+        selectedChats = new ArrayList<>();
         adapter.setSelected(false);
     }
 

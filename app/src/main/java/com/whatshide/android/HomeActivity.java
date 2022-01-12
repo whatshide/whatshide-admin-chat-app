@@ -176,6 +176,7 @@ public class HomeActivity extends AppCompatActivity implements ProfileImageListe
         adapter = new RecentAdapter(recentConversations, getApplicationContext(), this);
         androidx.appcompat.widget.Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle("Whatshide");
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false));
         progressBar = (ProgressBar) findViewById(R.id.progressBar);

@@ -4,6 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,15 +47,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
     public static final int MSG_TYPE_RIGHT = 1;
     private static final int MSG_TYPE_RIGHT_IMAGE = 3;
     private static final int MSG_TYPE_LEFT_IMAGE = 4;
-    private int selectedChat = RecyclerView.NO_POSITION;
     private MessageListener messageListener;
-
     private FirebaseFirestore mDatabase = FirebaseFirestore.getInstance();
     List<Chat> list;
     Context context;
     FirebaseUser firebaseUser;
     private ImageMessageListener imageMessageListener;
-
+    private boolean selectionMode = false;
     public ChatAdapter(List<Chat> list, Context context, ImageMessageListener imageMessageListener, MessageListener messageListener) {
         this.list = list;
         this.context = context;
@@ -81,10 +85,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
         Chat chat = list.get(position);
         holder.msg.setText(chat.getMessage());
-        holder.itemView.setLongClickable(true);
-        holder.itemView.setSelected(position == selectedChat);
 
-        holder.time.setText(chat.getTime().substring(20));
+        holder.itemView.setLongClickable(true);
+        holder.itemView.setSelected(chat.isSelected());
+
+        holder.time.setText(chat.getTime().substring(19));
         if( position>0){
             try {
                 if(getDate(chat.dateObj).compareTo(getDate(list.get(position-1).dateObj)) > 0){
@@ -112,9 +117,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                //initial press
+                selectionMode = !selectionMode;
+                chat.setSelected(!chat.isSelected());
+
+                //set selection for first
                 messageListener.onMessageSelect(chat);
-                notifyItemChanged(selectedChat);
-                selectedChat = position;
                 notifyItemChanged(position);
                 return true;
             }
@@ -125,7 +133,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
                 if(chat.getImage_url() != null){
                     imageMessageListener.onImageMessageClicked(chat);
                 }
-
+                if(selectionMode){
+                    if (!chat.isSelected()) {
+                        messageListener.onMessageSelect(chat);
+                    }else {
+                        messageListener.onMessageRemoved(chat);
+                    }
+                    chat.setSelected(!chat.isSelected());
+                    notifyItemChanged(position);
+                }
             }
         });
     }
@@ -133,10 +149,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
 
     public void setSelected(boolean selected){
         if(!selected){
-            int pos = selectedChat;
-            selectedChat = RecyclerView.NO_POSITION;
-            notifyItemChanged(pos);
-
+            for(Chat chat:list){
+                chat.setSelected(false);
+            }
+            selectionMode = false;
+            notifyDataSetChanged();
         }
     }
 
