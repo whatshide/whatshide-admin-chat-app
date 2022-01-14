@@ -130,9 +130,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chat.getImage_url() != null){
-                    imageMessageListener.onImageMessageClicked(chat);
-                }
+
                 if(selectionMode){
                     if (!chat.isSelected()) {
                         messageListener.onMessageSelect(chat);
@@ -141,6 +139,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
                     }
                     chat.setSelected(!chat.isSelected());
                     notifyItemChanged(position);
+                }else{
+                    if(chat.getImage_url() != null){
+                        imageMessageListener.onImageMessageClicked(chat);
+                    }
                 }
             }
         });
