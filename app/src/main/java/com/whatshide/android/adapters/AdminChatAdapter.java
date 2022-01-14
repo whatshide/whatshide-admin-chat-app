@@ -67,10 +67,9 @@ public class AdminChatAdapter extends RecyclerView.Adapter<AdminChatAdapter.myVi
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
         Chat chat = list.get(position);
         holder.sender.setText(getName(chat.getSender()));
-        holder.message.setText(Html.fromHtml(chat.getMessage()));
+        holder.message.setText(chat.getMessage());
         holder.time.setText(chat.getTime());
 
-        holder.message.setMovementMethod(LinkMovementMethod.getInstance());
 
         holder.itemView.setSelected(position == selectedChat);
         if(chat.getImage_url() != null){

@@ -66,7 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.myViewHolder> 
     @Override
     public ChatAdapter.myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType == MSG_TYPE_LEFT){
-            View v = LayoutInflater.from(context).inflate(R.layout.left_chat,null,false);
+            View v = LayoutInflater.from(context).inflate(R.layout.left_chat,parent,false);
             return new ChatAdapter.myViewHolder(v);
         }else if(viewType == MSG_TYPE_RIGHT){
             View v = LayoutInflater.from(context).inflate(R.layout.right_chat,null,false);

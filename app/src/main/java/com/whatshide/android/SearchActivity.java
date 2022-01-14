@@ -101,7 +101,6 @@ public class SearchActivity extends AppCompatActivity implements UserListener {
 
     private void getIntentData() {
         forwardChats = (List<Chat>) getIntent().getSerializableExtra("forward_chats");
-        Log.d("size of forwards chats", "getIntentData:" + forwardChats.size());
         if(forwardChats == null){
             MODE = Constants.MODE_SEARCH;
         }else{

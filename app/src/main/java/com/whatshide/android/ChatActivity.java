@@ -86,7 +86,7 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
     RelativeLayout toProfile,openImageContainer;
 
     private boolean isOnline = false;
-    private TextView message_status;
+    private TextView messageStatus;
 
     private List<Chat> selectedChats = new ArrayList<>();
 
@@ -372,7 +372,7 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
         openImageName = (TextView) findViewById(R.id.open_image_name);
         openImageView = (PhotoView) findViewById(R.id.open_image_view);
 
-        message_status = (TextView) findViewById(R.id.message_status);
+        messageStatus = (TextView) findViewById(R.id.message_status);
 
         rotate = (ImageView) findViewById(R.id.rotate);
         scaleGestureDetector = new ScaleGestureDetector(this,new ScaleListener());
@@ -453,6 +453,7 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
                         }
                         chat.dateObj = documentChange.getDocument().getDate(Constants.KEY_TIMESTAMP);
                         chats.add(chat);
+
                     }
                     else if(documentChange.getType() == DocumentChange.Type.MODIFIED){
                         isModified = true;
@@ -600,32 +601,14 @@ public class ChatActivity extends AppCompatActivity implements ImageMessageListe
             }
             if(value != null && value.getDocuments().size()>0){
                 DocumentChange documentChange = value.getDocumentChanges().get(0);
-                if(documentChange.getType() == DocumentChange.Type.MODIFIED){
-                    conversationId = documentChange.getDocument().getId();
-                    conversation = new Chat();
-                    conversation.setSender(documentChange.getDocument().getString(Constants.KEY_SENDER));
-                    conversation.setReceiver(documentChange.getDocument().getString(Constants.KEY_RECEIVER));
-                    conversation.setMessage(documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE));
-                    conversation.setStatus(documentChange.getDocument().getString(Constants.KEY_STATUS));
-                    if(conversation.getSender().equals(mine) && conversation.getStatus().equals(Constants.VALUE_SEEN)){
-                        message_status.setVisibility(View.VISIBLE);
-                        message_status.setText(conversation.getStatus());
-                    }else{
-                        message_status.setVisibility(View.INVISIBLE);
-                    }
-                }else{
-                    conversationId = documentChange.getDocument().getId();
-                    conversation = new Chat();
-                    conversation.setSender(documentChange.getDocument().getString(Constants.KEY_SENDER));
-                    conversation.setReceiver(documentChange.getDocument().getString(Constants.KEY_RECEIVER));
-                    conversation.setMessage(documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE));
-                    conversation.setStatus(documentChange.getDocument().getString(Constants.KEY_STATUS));
-                    if(conversation.getSender().equals(mine) && conversation.getStatus().equals(Constants.VALUE_SEEN)){
-                        message_status.setVisibility(View.VISIBLE);
-                        message_status.setText(conversation.getStatus());
-                    }else{
-                        message_status.setVisibility(View.INVISIBLE);
-                    }
+                conversationId = documentChange.getDocument().getId();
+                conversation = new Chat();
+                conversation.setSender(documentChange.getDocument().getString(Constants.KEY_SENDER));
+                conversation.setReceiver(documentChange.getDocument().getString(Constants.KEY_RECEIVER));
+                conversation.setMessage(documentChange.getDocument().getString(Constants.KEY_LAST_MESSAGE));
+                conversation.setStatus(documentChange.getDocument().getString(Constants.KEY_STATUS));
+                if(chats.get(chats.size()-1).getSender().equals(mine) && conversation.getStatus().equals(Constants.VALUE_SEEN)){
+                    messageStatus.setVisibility(View.VISIBLE);
                 }
             }
         }

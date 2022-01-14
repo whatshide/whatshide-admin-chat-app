@@ -201,7 +201,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void display() {
         input.setText(INPUT_STRING);
+
         ANS_STRING = Float.toString(ANS);
+
         ans.setText(ANS_STRING);
         INPUT = 0;
     }

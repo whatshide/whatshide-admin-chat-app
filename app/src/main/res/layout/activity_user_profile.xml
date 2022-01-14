@@ -24,7 +24,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:src="@drawable/random_profile"
+                android:src="@android:color/white"
                 android:id="@+id/profile"
                 />
             <View
@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="name"
+                android:text=""
                 android:textColor="@color/colorWhite"
                 android:textStyle="bold"
                 android:id="@+id/name"
@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Encryption"
+                    android:text="End-to-End Encryption"
                     android:textColor="@android:color/black"
                     android:layout_gravity="center_vertical"
                     />
